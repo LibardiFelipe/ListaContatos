@@ -22,6 +22,7 @@ interface Users {
 const App = () => {
   const [usersData, setUsersData] = useState<Users[]>([]);
   const [filteredData, setFilteredData] = useState<Users[]>([]);
+  const [highlightInput, setHighlightInput] = useState<boolean>(false);
   
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadingMessage, setLoadingMessage] = useState<string>("Carregando dados da API");
@@ -33,8 +34,8 @@ const App = () => {
 
       if (res.data) {
         setUsersData(res.data.results);
-        setFilteredData(usersData);
         setIsLoading(false);
+        setFilteredData(usersData);
       } else {
         setLoadingMessage("Erro ao carregar dados!");
       }
@@ -64,12 +65,16 @@ const App = () => {
   // e os resultados obtidos da API
   return (
     <GS.Container>
-      <GS.SearchBar onChangeText={(text: string) => filterItem(text)} />
+      <GS.SearchBar
+        highlight={highlightInput}
+        onBlur={() => setHighlightInput(false)}
+        onFocus={() => setHighlightInput(true)}
+        onChangeText={(text: string) => filterItem(text)}
+      />
       <FlatList
       style={{
         flex: 1,
         width: '100%',
-        marginTop: 10
       }}
         data={filteredData}
         keyExtractor={(item, index) => index.toString()}

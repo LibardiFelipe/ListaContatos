@@ -3,18 +3,21 @@ import { ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
 
 const Colors = {
-    primary: '#ededed',
-    secundary: '#b5b5b5',
-    strongFont: '#2b2b2b',
-    normalFont: '#3d3d3d'
+    loadingIco: '#6e6e6e',
+    loadingText: '#6e6e6e',
+    background: '#eee',
+    details: '#e33d6f',
+    searchText: '#2b2b2b',
+    searchPlaceholderText: '#6e6e6e',
+    profileName: '#2b2b2b'
 }
 
 export const Container = styled.View`
     flex: 1;
     width: 100%;
-    padding-top: 50px;
+    padding-top: 60px;
     align-items: center;
-    background-color: ${Colors.primary};
+    background-color: ${Colors.background};
 `;
 
 
@@ -22,14 +25,13 @@ const LoadingContainer = styled.View`
     flex: 1;
     align-items: center;
     justify-content: center;
-    background-color: ${Colors.primary};
 `;
 
 const LoadingText = styled.Text`
     font-size: 16px;
-    color: ${Colors.normalFont};
     margin-top: 10px;
     text-align: center;
+    color: ${Colors.loadingText};
 `;
 
 
@@ -42,7 +44,10 @@ interface ProfileInfo {
     picUrl: string
 }
 interface InputBox {
-    onChangeText: (text: string) => void; 
+    onChangeText: (text: string) => void,
+    onBlur: () => void,
+    onFocus: () => void,
+    highlight: boolean
 }
 
 export const Loading = ({message}: LoadingProps) => {
@@ -50,7 +55,7 @@ export const Loading = ({message}: LoadingProps) => {
         <LoadingContainer>
             <ActivityIndicator
                 size="large"
-                color={Colors.normalFont}
+                color={Colors.loadingIco}
             />
             <LoadingText>{message}</LoadingText>
         </LoadingContainer>
@@ -64,23 +69,32 @@ const EntryContainer = styled.TouchableOpacity`
     align-items: center;
     padding: 10px 15px;
     align-self: center;
-    border-radius: 10px;
-    margin-bottom: 5px;
-    background-color: ${Colors.secundary};
+    margin-bottom: 10px;
 `;
 
 const ProfPic = styled.Image`
-    height: 40px;
-    width: 40px;
-    border-width: 1px;
-    border-color: ${Colors.primary};
-    border-radius: 20px;
+    height: 46px;
+    width: 46px;
+    border-color: ${Colors.details};
+    border-width: 2px;
+    border-radius: 23px;
 `;
 
 const ProfName = styled.Text`
-    color: ${Colors.normalFont};
     font-size: 18px;
     margin: 0 15px;
+    flex: 1;
+    color: ${Colors.profileName};
+`;
+
+const CallButton = styled.TouchableOpacity`
+    height: 40px;
+    width: 40px;
+`;
+
+const CallIco = styled.Image`
+    width: 100%;
+    height: 100%;
 `;
 
 export const PersonEntry = ({name, last, picUrl}: ProfileInfo) => {
@@ -92,29 +106,46 @@ export const PersonEntry = ({name, last, picUrl}: ProfileInfo) => {
         <EntryContainer>
             <ProfPic source={{uri: picUrl}} />
             <ProfName numberOfLines={1}>{fullName}</ProfName>
+            <CallButton>
+                <CallIco
+                style={{
+                    tintColor: (Colors.details)
+                }}
+                    source={require('../assets/call.png')}
+                />
+            </CallButton>
         </EntryContainer>
     );
 }
 
-const SearchContainer = styled.View`
+interface SearchCont {
+    highlight: boolean
+}
+const SearchContainer = styled.View<SearchCont>`
     height: 45px;
     width: 90%;
     align-self: center;
-    border-radius: 10px;
-    border-width: 1px;
+    border-color: ${Colors.details};
+    border-bottom-width: ${props => props.highlight ? '2px' : '0px'};
     justify-content: center;
 `;
 const SearchInput = styled.TextInput`
     height: 90%;
     margin: 0 15px;
-    color: #2b2b2b;
     font-size: 18px;
+    color: ${Colors.searchText};
 `;
 
-export const SearchBar: React.FC<InputBox> = ({onChangeText}) => {
+export const SearchBar: React.FC<InputBox> = ({onChangeText, onBlur, onFocus, highlight}) => {
     return (
-        <SearchContainer>
-            <SearchInput onChangeText={onChangeText} placeholder='Procurar...' />
+        <SearchContainer highlight={highlight}>
+            <SearchInput
+                onFocus={onFocus}
+                onBlur={onBlur}
+                onChangeText={onChangeText}
+                placeholder='Procurar...'
+                placeholderTextColor={Colors.searchPlaceholderText}
+            />
         </SearchContainer>
     );
 }
